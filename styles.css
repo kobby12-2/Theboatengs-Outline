@@ -1,0 +1,369 @@
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: "Proxima Nova", ProximaNova, Avenir, "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple Color Emoji", "Segoe UI Emoji";
+  color: #2b2b2b;
+  background: #fff;
+  overflow: hidden; /* disable vertical page scrolling */
+}
+
+/* Splash / Loading Deck */
+#splash {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  z-index: 9999;
+  animation: splashFadeIn 600ms ease-out both;
+}
+
+.splash-background {
+  position: absolute;
+  inset: 0;
+  background-image: url("caramel background.png");
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1.05) contrast(1.02);
+  transform: scale(1.05);
+  animation: bgKenBurns 12s ease-in-out both;
+}
+
+.splash-content {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.logo {
+  width: min(280px, 60vw);
+  height: auto;
+  animation: logoPop 1000ms ease-out 120ms both, logoFloat 4s ease-in-out 1.2s infinite;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+}
+
+.loading-text {
+  color: #4b3b2e;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  animation: textFade 800ms ease-out 600ms both;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 6px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(2px);
+}
+
+/* Hide splash gracefully when dismissed */
+#splash.is-hidden {
+  animation: splashFadeOut 800ms ease-in forwards;
+  pointer-events: none;
+}
+
+/* Main content base styles */
+#content {
+  display: block;
+  min-height: 100vh;
+  background: #faf7f2;
+}
+
+.hero {
+  padding: 64px 24px 24px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(250,247,242,0.9), rgba(250,247,242,1));
+}
+
+.hero h1 {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 5vw, 40px);
+  color: #6b4f3a; /* coffee */
+  font-family: "Agathe Agathe", "Didot", "Bodoni MT", Baskerville, serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero p {
+  margin: 0;
+  color: #6b5646;
+}
+
+.hero .subtitle {
+  margin: 10px 0 20px;
+  color: #8a6b54;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-family: "Agathe Agathe", "Didot", "Bodoni MT", Baskerville, serif;
+  font-size: clamp(10px, 2.2vw, 14px);
+}
+
+.hero .names-img {
+  display: block;
+  width: min(720px, 80vw);
+  margin: 16px auto 18px;
+  height: auto;
+}
+
+.hero .date,
+.hero .location {
+  display: block;
+  margin: 10px 0;
+  color: #5a4638;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: "Agathe Agathe", "Didot", "Bodoni MT", Baskerville, serif;
+  font-size: clamp(10px, 2vw, 13px);
+}
+
+.hero .section-title {
+  margin: 20px 0 8px;
+  font-size: clamp(22px, 4.5vw, 34px);
+  color: #5a4638;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-family: "Agathe Agathe", "Didot", "Bodoni MT", Baskerville, serif;
+}
+
+.outline-section {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.outline-section h2 {
+  margin: 8px 0 12px;
+  font-size: clamp(20px, 3.6vw, 28px);
+  color: #5a4638;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-family: "Agathe Agathe", "Didot", "Bodoni MT", Baskerville, serif;
+}
+
+.outline-section ul {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.7;
+}
+
+.footer {
+  text-align: center;
+  padding: 40px 24px 64px;
+  color: #7a6556;
+}
+
+/* Slides: horizontal, full-height pages with snap */
+.slides {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto; /* allow swipe */
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-snap-stop: always;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  padding: 8px 16px 24px;
+}
+
+/* Hide horizontal scrollbar across browsers */
+.slides { scrollbar-width: none; -ms-overflow-style: none; }
+.slides::-webkit-scrollbar { display: none; }
+
+.slide {
+  flex: 0 0 100vw;
+  height: 100vh; /* exact viewport height */
+  background: #fcfaf7;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  scroll-snap-align: start;
+  display: grid;
+  position: relative; /* for bottom logo */
+}
+
+.slide-inner {
+  padding: 16px 16px 64px; /* extra bottom space for enlarged logo */
+  align-self: start;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Small bottom logo on every page */
+.slide::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 16px; /* small bottom margin */
+  transform: translateX(-50%);
+  width: 88px; /* slightly larger */
+  height: 30px;
+  background-image: url("tb brown logo.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* Swipe hint (first page only where present) */
+.swipe-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 54px; /* sits just above the logo (16px + 30px + ~8px space) */
+  transform: translateX(-50%);
+  color: #6b4f3a;
+  font-size: 10px; /* small */
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+  font-family: "Proxima Nova", ProximaNova, Avenir, "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui;
+  pointer-events: none;
+}
+
+.slide-title {
+  margin: 6px 0 20px;
+  color: #5a4638;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-family: "Agathe Agathe", "Didot", "Bodoni MT", Baskerville, serif;
+  font-size: clamp(18px, 4.4vw, 28px);
+}
+
+/* Photography slide */
+.photo-title {
+  margin: 6px 0 16px;
+  color: #5a4638;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-family: "Agathe Agathe", "Didot", "Bodoni MT", Baskerville, serif;
+  font-size: clamp(18px, 4.4vw, 28px);
+}
+
+.photo-list {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+@media (min-width: 768px) {
+  .photo-list {
+    columns: 2;
+    column-gap: 24px;
+  }
+}
+
+/* Timeline styling */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 18px;
+  position: relative;
+}
+
+.timeline:before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(90,70,56,0.25);
+}
+
+.timeline-item {
+  position: relative;
+  padding: 12px 0 12px 8px;
+}
+
+.timeline-item:before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 22px;
+  width: 10px;
+  height: 10px;
+  background: #6b4f3a;
+  border: 2px solid #fcfaf7;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.timeline-item .time {
+  display: inline-block;
+  background: rgba(107,79,58,0.08);
+  color: #6b4f3a;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-family: "Proxima Nova", ProximaNova, Avenir, "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui;
+}
+
+.timeline-item .title {
+  margin: 6px 0 4px;
+  color: #5a4638;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: "Agathe Agathe", "Didot", "Bodoni MT", Baskerville, serif;
+  font-size: clamp(14px, 3.6vw, 18px);
+}
+
+.timeline-item .details {
+  margin: 0;
+  padding-left: 18px;
+  color: #3f332a;
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+/* Photography items appear slightly smaller */
+.timeline-item.photo .title {
+  font-size: clamp(12px, 3.2vw, 16px);
+  letter-spacing: 0.1em;
+}
+
+/* Compact slides (start content at the very top) */
+.slide-compact .slide-inner { padding-top: 8px; }
+.slide-compact .slide-title { margin-top: 0; }
+
+/* Animations */
+@keyframes splashFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes splashFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+@keyframes bgKenBurns {
+  0% { transform: scale(1.05); filter: saturate(1.02) contrast(1.02); }
+  50% { transform: scale(1.10); }
+  100% { transform: scale(1.14); }
+}
+
+@keyframes logoPop {
+  0% { transform: translateY(8px) scale(0.95); opacity: 0; }
+  60% { transform: translateY(-4px) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes textFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
