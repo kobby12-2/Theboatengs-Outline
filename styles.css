@@ -198,35 +198,38 @@ html, body {
   justify-content: flex-start;
 }
 
-/* Small bottom logo on every page */
+/* Small bottom logo on every page - fixed at bottom */
 .slide::after {
   content: "";
-  position: absolute;
+  position: fixed;
   left: 50%;
   bottom: 16px; /* small bottom margin */
   transform: translateX(-50%);
-  width: 72px; /* slightly smaller for better fit */
-  height: 30px;
+  width: clamp(60px, 15vw, 88px); /* responsive size */
+  height: clamp(20px, 5vw, 35px);
   background-image: url("tb brown logo.png");
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   opacity: 0.95;
   pointer-events: none;
+  z-index: 100; /* make sure it stays on top */
 }
 
-/* Swipe hint (first page only where present) */
-.swipe-hint {
-  position: absolute;
+/* Swipe hint - positioned right above the logo (global element) */
+.swipe-hint-global {
+  position: fixed;
   left: 50%;
-  bottom: 54px; /* sits just above the logo (16px + 30px + ~8px space) */
+  bottom: calc(16px + clamp(20px, 5vw, 35px) + 24px); /* right above the logo with good gap */
   transform: translateX(-50%);
   color: #6b4f3a;
-  font-size: 10px; /* small */
+  font-size: clamp(9px, 2.2vw, 11px); /* responsive font size */
   letter-spacing: 0.06em;
   opacity: 0.85;
   font-family: "Proxima Nova", ProximaNova, Avenir, "Helvetica Neue", Helvetica, Arial, ui-sans-serif, system-ui;
   pointer-events: none;
+  z-index: 100; /* make sure it stays on top */
+  white-space: nowrap;
 }
 
 .slide-title {
@@ -340,6 +343,9 @@ html, body {
   .timeline-item .title { font-size: clamp(12px, 3vw, 15px); }
   .timeline-item .details { font-size: 11px; line-height: 1.45; }
   .photo-list { font-size: 11px; line-height: 1.4; }
+
+  /* Adjust bottom spacing on mobile to prevent content from hiding behind fixed logo */
+  .slide-inner { padding-bottom: 80px !important; }
 }
 
 /* Photography items appear slightly smaller */
