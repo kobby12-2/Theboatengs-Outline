@@ -329,13 +329,12 @@ html, body {
   font-size: 12px;
 }
 
-/* Small-screen tightening so everything fits neatly */
 @media (max-width: 480px) {
-  .hero h1 { font-size: clamp(24px, 6vw, 32px); }
-  .hero .subtitle { font-size: clamp(9px, 2.8vw, 12px); }
-  .hero .names-img { width: 55vw; margin: 16px auto 14px !important; }
-  .hero .date, .hero .location { font-size: clamp(9px, 2.6vw, 12px); }
-  .hero .section-title { font-size: clamp(18px, 4vw, 26px); }
+  .hero h1 { font-size: clamp(32px, 6vw, 32px); }
+  .hero .subtitle { font-size: clamp(12px, 2.8vw, 12px); }
+  .hero .names-img { width: 80vw; margin: 16px auto 14px !important; }
+  .hero .date, .hero .location { font-size: clamp(12px, 2.6vw, 12px); }
+  .hero .section-title { font-size: clamp(24px, 4vw, 26px); }
 
   .slide-title, .photo-title { font-size: clamp(15px, 3.6vw, 22px); }
   .timeline-item { padding: 10px 0 10px 8px; }
@@ -347,6 +346,7 @@ html, body {
   /* Adjust bottom spacing on mobile to prevent content from hiding behind fixed logo */
   .slide-inner { padding-bottom: 80px !important; }
 }
+
 
 /* Photography items appear slightly smaller */
 .timeline-item.photo .title {
