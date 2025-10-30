@@ -61,29 +61,21 @@
     var current = { slide: firstOutlineSlide, inner: inner, list: list };
 
     // Append ceremony timeline items one by one and measure; if overflow, move item to a new slide
-    // Additionally, force a page break right AFTER the "VOW EXCHANGE & RINGS" item
-    var vowsBreakApplied = false;
+    // On small screens, enforce a hard cap of 5 items per slide (so page 1 has 1-5, page 2 has 6-10)
+    var isMobile = window.innerWidth <= 600;
+    var itemsOnCurrentTimelineSlide = 0;
     for (var i = 0; i < allItems.length; i++) {
       var li = allItems[i];
       current.list.appendChild(li);
       var overflow = current.inner.scrollHeight > current.inner.clientHeight;
-      if (overflow) {
+      itemsOnCurrentTimelineSlide += 1;
+      var exceedMobileCap = isMobile && itemsOnCurrentTimelineSlide > 5;
+      if (overflow || exceedMobileCap) {
         current.list.removeChild(li);
         isFirstOutlinePage = false;
         current = createSlide();
         current.list.appendChild(li);
-      }
-
-      // Force split after the VOW EXCHANGE & RINGS entry
-      if (!vowsBreakApplied) {
-        var titleEl = li.querySelector && li.querySelector('.title');
-        var titleText = titleEl && (titleEl.textContent || '').toUpperCase();
-        if (titleText && titleText.indexOf('VOW EXCHANGE') !== -1) {
-          // Start a new slide for all remaining items
-          isFirstOutlinePage = false;
-          current = createSlide();
-          vowsBreakApplied = true;
-        }
+        itemsOnCurrentTimelineSlide = 1;
       }
     }
 
@@ -110,6 +102,11 @@
       var titlePlaced = false;
       function placePhotoTitleIfNeeded() {
         if (titlePlaced || !photoTitle) return;
+        // Ensure photography starts on a fresh slide after outline pages (on mobile this becomes page 4)
+        if (current.list && current.list.children && current.list.children.length > 0) {
+          isFirstOutlinePage = false;
+          current = createSlide();
+        }
         // Temporarily append title to current slide to test fit
         current.inner.appendChild(photoTitle);
         var overflow = current.inner.scrollHeight > current.inner.clientHeight;
@@ -174,17 +171,36 @@
       });
     }
 
-    // Add swipe hints to all slides
-    var slides = Array.prototype.slice.call(slidesContainer.querySelectorAll('section.slide'));
-    slides.forEach(function (slide, idx) {
-      var existing = slide.querySelector('.swipe-hint');
-      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
-      var hint = document.createElement('div');
-      hint.className = 'swipe-hint';
-      var isLast = idx === slides.length - 1;
-      hint.textContent = isLast ? 'Swipe back' : 'Swipe left to next page';
-      slide.appendChild(hint);
+    // Remove ALL existing per-slide swipe hints and use a single global hint instead
+    var existingHints = slidesContainer.querySelectorAll('.swipe-hint');
+    Array.prototype.forEach.call(existingHints, function (hint) {
+      if (hint && hint.parentNode) hint.parentNode.removeChild(hint);
     });
+
+    // Create a single global swipe hint that sits above the fixed logo
+    var globalHint = document.querySelector('.swipe-hint-global');
+    if (!globalHint) {
+      globalHint = document.createElement('div');
+      globalHint.className = 'swipe-hint-global';
+      document.body.appendChild(globalHint);
+    }
+
+    var slides = Array.prototype.slice.call(slidesContainer.querySelectorAll('section.slide'));
+
+    function updateHintText() {
+      var index = Math.round(slidesContainer.scrollLeft / slidesContainer.clientWidth);
+      if (index < 0) index = 0;
+      if (index > slides.length - 1) index = slides.length - 1;
+      var isLast = index === slides.length - 1;
+      globalHint.textContent = isLast ? 'Swipe back' : 'Swipe left to next page';
+    }
+
+    // Bind scroll listener once
+    if (!slidesContainer.dataset.hintBound) {
+      slidesContainer.addEventListener('scroll', updateHintText, { passive: true });
+      slidesContainer.dataset.hintBound = 'true';
+    }
+    updateHintText();
   }
 
   function showContent() {
